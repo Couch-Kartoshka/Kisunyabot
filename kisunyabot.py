@@ -31,8 +31,12 @@ DEFAULT_ENDPOINT = 'https://api.thecatapi.com/v1/images/search'
 BACKUP_ENDPOINT = 'https://api.thedogapi.com/v1/images/search'
 
 # Настройка интерфейса бота:
-BUTTON = 'Подай котика!'
-MARKUP = telegram.ReplyKeyboardMarkup.from_button(BUTTON, resize_keyboard=True)
+DOG_BOT_NAME = '@doggynyabot'
+BUTTONS = ['Подай котика!', 'Мне бы собачку']
+MARKUP = telegram.ReplyKeyboardMarkup.from_column(
+    BUTTONS,
+    resize_keyboard=True
+)
 
 # Псевдонимы типов:
 CustomContext = telegram.ext.callbackcontext.CallbackContext
@@ -129,7 +133,7 @@ def get_response() -> requests.models.Response:
 
 
 def new_image(update: CustomUpdate, context: CustomContext) -> None:
-    """Логика работы хендлера сообщения по кнопке."""
+    """Логика работы хендлера сообщения по кнопке про кота."""
     logger.debug(f'Получено сообщение "{update.message.text}"')
     chat = update.effective_chat
     try:
@@ -143,6 +147,15 @@ def new_image(update: CustomUpdate, context: CustomContext) -> None:
         text = ('К сожалению, сервис на данный момент недоступен. '
                 'Попробуйте обратиться позднее.')
         send_message(context=context, chat_id=chat.id, text=text)
+
+
+def redirect_to_bot(update: CustomUpdate, context: CustomContext) -> None:
+    """Логика работы хендлера сообщения по кнопке про собаку."""
+    logger.debug(f'Получено сообщение "{update.message.text}"')
+    chat = update.effective_chat
+    text = (f'Боюсь, что это не ко мне. Но вот мой друг {DOG_BOT_NAME} '
+            'точно выручит.')
+    send_message(context=context, chat_id=chat.id, text=text)
 
 
 def reply_to_message(update: CustomUpdate, context: CustomContext) -> None:
@@ -197,7 +210,10 @@ def main() -> None:
 
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(
-        MessageHandler(Filters.text(BUTTON), new_image)
+        MessageHandler(Filters.text(BUTTONS[0]), new_image)
+    )
+    updater.dispatcher.add_handler(
+        MessageHandler(Filters.text(BUTTONS[1]), redirect_to_bot)
     )
     updater.dispatcher.add_handler(
         MessageHandler(Filters.text, reply_to_message)

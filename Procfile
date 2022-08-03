@@ -1,1 +1,1 @@
-worker: python kisunyabot.py
+worker: python3 kisunyabot.py

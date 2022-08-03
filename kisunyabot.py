@@ -24,7 +24,7 @@ from exceptions import APIAnswerStatusCodeError, EnvVariableError
 load_dotenv()
 
 # Обязательная переменная окружения:
-TELEGRAM_TOKEN = os.getenv('TOKEN')
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 # Настройки для запроса к API:
 DEFAULT_ENDPOINT = 'https://api.thecatapi.com/v1/images/search'

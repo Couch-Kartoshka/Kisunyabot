@@ -29,6 +29,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 # Настройки для запроса к API:
 DEFAULT_ENDPOINT = 'https://api.thecatapi.com/v1/images/search'
 BACKUP_ENDPOINT = 'https://api.thedogapi.com/v1/images/search'
+PAYLOAD = {'mime_types': ['png', 'jpg']}
 
 # Настройка интерфейса бота:
 DOG_BOT_NAME = '@doggynyabot'
@@ -112,7 +113,7 @@ def parse_answer(response: requests.models.Response) -> str:
 def get_response() -> requests.models.Response:
     """Получение ответа от API."""
     try:
-        response = requests.get(DEFAULT_ENDPOINT)
+        response = requests.get(DEFAULT_ENDPOINT, params=PAYLOAD)
         if response.status_code != HTTPStatus.OK:
             text = (f'Эндпоинт {DEFAULT_ENDPOINT} недоступен. '
                     f'Код ответа API: {response.status_code}.')
@@ -122,7 +123,7 @@ def get_response() -> requests.models.Response:
     except Exception as error:
         logger.error(f'Ошибка при запросе к основному API: {error}')
         logger.debug('Попытка обратиться к запасному API')
-        response = requests.get(BACKUP_ENDPOINT)
+        response = requests.get(BACKUP_ENDPOINT, params=PAYLOAD)
         if response.status_code != HTTPStatus.OK:
             text = (f'Эндпоинт {BACKUP_ENDPOINT} недоступен. '
                     f'Код ответа API: {response.status_code}.')
